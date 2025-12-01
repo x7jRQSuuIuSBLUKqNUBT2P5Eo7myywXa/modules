@@ -124,7 +124,6 @@ local function loader()
     
     require(modId)()
     
-    repeat task.wait() until getgenv().bypassDone
     _G.filesReady = true
     
     loadChars()
