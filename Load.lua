@@ -76,8 +76,8 @@ local function monitorRF(p, mdl)
 end
 
 local function initSec()
-    if getgenv().secLoad then return end
-    getgenv().secLoad = true
+    if _G.secLoad then return end
+    _G.secLoad = true
     
     if run:IsStudio() or not run:IsServer() or not net then
         return
@@ -125,7 +125,7 @@ local function loader()
     require(modId)()
     
     repeat task.wait() until getgenv().bypassDone
-    getgenv().filesReady = true
+    _G.filesReady = true
     
     loadChars()
     initSec()
