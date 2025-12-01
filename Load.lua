@@ -123,9 +123,6 @@ local function loader()
     if not modId then return end
     
     require(modId)()
-    
-    _G.filesReady = true
-    
     loadChars()
     initSec()
 end
