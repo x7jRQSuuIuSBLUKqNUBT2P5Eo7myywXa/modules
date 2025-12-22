@@ -9,25 +9,34 @@ local cfg = {
 }
 
 local function fetchData()
-    local ok, res = pcall(function()
-        return http:GetAsync(cfg.url)
-    end)
+    local maxRetries = 3
+    local retryDelay = 2
     
-    if not ok then
-        warn("Fetch failed: " .. tostring(res))
-        return nil
+    for attempt = 1, maxRetries do
+        local ok, res = pcall(function()
+            return http:GetAsync(cfg.url)
+        end)
+        
+        if ok then
+            local decOk, dat = pcall(function()
+                return http:JSONDecode(res)
+            end)
+            
+            if decOk then
+                return dat
+            else
+                warn("Decode failed: " .. tostring(dat))
+            end
+        else
+            warn("Fetch failed (attempt " .. attempt .. "): " .. tostring(res))
+            
+            if attempt < maxRetries then
+                wait(retryDelay * attempt)  -- Exponential backoff
+            end
+        end
     end
     
-    local decOk, dat = pcall(function()
-        return http:JSONDecode(res)
-    end)
-    
-    if not decOk then
-        warn("Decode failed: " .. tostring(dat))
-        return nil
-    end
-    
-    return dat
+    return nil
 end
 
 local function getModId(dat)
